@@ -1,0 +1,27 @@
+body {
+    display: flex;
+}
+
+aside {
+    width: 250px;
+    background: #343a40;
+    color: white;
+    min-height: 100vh;
+    padding-top: 20px;
+}
+
+aside a {
+    display: block;
+    padding: 12px 20px;
+    color: white;
+    text-decoration: none;
+}
+
+aside a:hover {
+    background: #495057;
+}
+
+main {
+    flex: 1;
+    padding: 20px;
+}

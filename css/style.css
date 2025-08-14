@@ -1,0 +1,14 @@
+header {
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+                url('../img/bg.jpg') center/cover;
+    color: white;
+    padding: 100px 0;
+    text-align: center;
+}
+
+footer {
+    background: #343a40;
+    color: white;
+    padding: 15px 0;
+    text-align: center;
+}
