@@ -11,9 +11,9 @@
 
 <aside>
     <h4 class="text-center mb-4">Member Menu</h4>
-    <a href="#">🏦 Savings</a>
-    <a href="#">💳 Loan</a>
-    <a href="#">💵 Repayment</a>
+    <a href="savings.php">🏦 Savings</a>
+    <a href="loan.php">💳 Loan</a>
+    <a href="repayment.php">💵 Repayment</a>
     <a href="index.php">🚪 Logout</a>
 </aside>
 
