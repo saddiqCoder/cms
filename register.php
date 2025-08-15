@@ -1,3 +1,12 @@
+<?php
+ob_start();
+session_start(); 
+include_once "helper_functions/loader.php";
+if ((isset($_SESSION['memberuser']))){
+    header("Location: dashboard.php");
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,7 +20,7 @@
 
 <div class="register-card">
     <h3 class="text-center mb-3">Create Your Account</h3>
-    <form onsubmit="event.preventDefault(); window.location.href='dashboard.php';">
+    <form action="<?php $_SELF_PHP ?>" method="POST" enctype="multipart/form-data">
         <div class="mb-3">
             <label class="form-label">Full Name</label>
             <input type="text" class="form-control" placeholder="e.g., John Doe" required>

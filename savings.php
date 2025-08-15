@@ -1,3 +1,14 @@
+<?php
+ob_start();
+session_start(); 
+include_once "helper_functions/loader.php";
+if ((isset($_SESSION['memberuser']))){
+
+}else{
+	header("Location: login.php");
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

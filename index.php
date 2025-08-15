@@ -19,7 +19,7 @@
         <div class="mt-4">
             <a href="login.php" class="btn btn-light me-2">Login</a>
             <a href="register.php" class="btn btn-warning me-2">Register</a>
-            <a href="admin.php" class="btn btn-danger">Admin</a>
+            <a href="admin/index.php" class="btn btn-danger">Admin</a>
         </div>
     </div>
 </header>
