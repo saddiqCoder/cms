@@ -2,11 +2,44 @@
 ob_start();
 session_start(); 
 include_once "helper_functions/loader.php";
-if ((isset($_SESSION['memberuser']))){
-
-}else{
-	header("Location: login.php");
+if ((!isset($_SESSION['memberuser']))){
+    header("Location: login.php");
 }
+
+$memberID = $_SESSION['memberuser']['id'];
+
+extract($_POST);
+@$data  = " memberID = '$memberID' ";
+@$data .= ", amount = '$amount' ";
+@$data .= ", date = '$date' ";
+@$data .= ", status = 'pendig' ";
+/* endOfData */
+
+/* updating savings into the database */
+    if (!empty($amount) && !empty($date)){
+        if(comfirm_query($con) !== false){
+            if ($con->query("INSERT INTO savings set ".$data)){
+                echo "<script> alert('Savings Record updated!!!'); </script>"; 
+            }else{
+                echo "<script> alert('An unexpected error occur'); </script>"; 
+            }
+        }
+    }
+/* End */
+
+// declaring an empty array to hold different querys
+$query = [];
+$queryarray = [];
+	
+// Query to search only music table in the database
+$query['getsavings'] = "
+    SELECT `amount`, `date`, `status`  FROM savings 
+    WHERE 1=1  LIMIT 5 OFFSET 0
+";
+
+$runsavings = run_query($con, $query['getsavings']);
+$runsavingsresult = mysqli_fetch_all($runsavings);
+
 ?>
 
 <!DOCTYPE html>
@@ -28,18 +61,18 @@ if ((isset($_SESSION['memberuser']))){
     </aside>
 
     <main>
-        <h2>Welcome, Member!</h2>
+        <h2>Hi, <?php echo $_SESSION['memberuser']['fname'];?> </h2>
         <p>Here you can manage your savings</p>
         <div class="p-4">
             <h2>Savings Form</h2>
-            <form class="mb-4">
+            <form action="<?php $_SELF_PHP ?>" method="POST" enctype="multipart/form-data" class="mb-4">
                 <div class="mb-3">
                     <label class="form-label">Amount</label>
-                    <input type="number" class="form-control" placeholder="Enter amount" required>
+                    <input type="number" name="amount" class="form-control" placeholder="Enter amount" required>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Date</label>
-                    <input type="date" class="form-control" required>
+                    <input type="text" value="<?php echo date('d/m/Y');?>" name="date" class="form-control" readonly required>
                 </div>
                 <button type="submit" class="btn btn-success">Save</button>
             </form>
@@ -53,8 +86,7 @@ if ((isset($_SESSION['memberuser']))){
                     </tr>
                 </thead>
                 <tbody>
-                    <tr><td>5000</td><td>2025-08-01</td><td>Confirmed</td></tr>
-                    <tr><td>3000</td><td>2025-07-15</td><td>Confirmed</td></tr>
+                    <?php echo_out_updateresult($runsavingsresult, count($runsavingsresult)) ?>
                 </tbody>
             </table>
 

@@ -2,10 +2,8 @@
 ob_start();
 session_start(); 
 include_once "helper_functions/loader.php";
-if ((isset($_SESSION['memberuser']))){
-
-}else{
-	header("Location: login.php");
+if ((!isset($_SESSION['memberuser']))){
+    header("Location: login.php");
 }
 ?>
 
@@ -25,11 +23,11 @@ if ((isset($_SESSION['memberuser']))){
     <a href="savings.php">🏦 Savings</a>
     <a href="loan.php">💳 Loan</a>
     <a href="repayment.php">💵 Repayment</a>
-    <a href="index.php">🚪 Logout</a>
+    <a href="logout.php">🚪 Logout</a>
 </aside>
 
 <main>
-    <h2>Welcome, Member!</h2>
+    <h2>Hi, <?php echo $_SESSION['memberuser']['fname'];?> </h2>
     <p>Here you can manage your savings, apply for loans, and track repayments.</p>
 </main>
 
