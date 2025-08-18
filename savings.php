@@ -2,6 +2,7 @@
 ob_start();
 session_start(); 
 include_once "helper_functions/loader.php";
+
 if ((!isset($_SESSION['memberuser']))){
     header("Location: login.php");
 }
@@ -34,7 +35,7 @@ $queryarray = [];
 // Query to search only music table in the database
 $query['getsavings'] = "
     SELECT `amount`, `date`, `status`  FROM savings 
-    WHERE 1=1  LIMIT 5 OFFSET 0
+    WHERE 1=1  LIMIT 10 OFFSET 0
 ";
 
 $runsavings = run_query($con, $query['getsavings']);
