@@ -17,7 +17,37 @@ $type = $conn->query("SELECT * FROM loan_types order by `type_name` desc ");
 $plan = $conn->query("SELECT * FROM loan_plan order by `months` desc ");
 //print_r($row);
 
-echo extract($_POST);
+if (isset($_POST['btnSaveLoan'])) {
+    
+    $status = 0;
+
+    extract($_POST);
+    $data = " member_id = $member_id ";
+    $data .= " , loan_type_id = '$loan_type_id' ";
+    $data .= " , plan_id = '$plan_id' ";
+    $data .= " , amount = '$amount' ";
+    $data .= " , purpose = '$purpose' ";
+    $data .= " , status = '$status' ";
+
+    $ref_no = mt_rand(1,99999999);
+    $i= 1;
+
+    while($i== 1){
+        $check = $conn->query("SELECT * FROM loan_list where ref_no ='$ref_no' ")->num_rows;
+        if($check > 0){
+        $ref_no = mt_rand(1,99999999);
+        }else{
+            $i = 0;
+        }
+    }
+    $data .= " , date_created = '".date("Y-m-d H:i")."' ";
+    $data .= " , date_released = '0000-00-00 00:00:00' ";
+    $data .= " , ref_no = '$ref_no' ";
+
+    $save = $conn->query("INSERT INTO loan_list set ".$data);
+    
+    echo "<script> alert('Loan Request Submitted!'); </script>";
+}
 
 ?>
 
@@ -86,7 +116,7 @@ echo extract($_POST);
                 <textarea name="purpose" id="" cols="30" rows="2" class="form-control" required><?php echo isset($purpose) ? $purpose : '' ?></textarea>
             </div>
 
-            <button type="submit" class="btn btn-primary">Apply for Loan</button>
+            <button type="submit" name="btnSaveLoan" class="btn btn-primary">Apply for Loan</button>
             <button class="btn btn-primary" type="button" id="calculate">Calculate</button> 
         </form>
         <div id="calculation_table">
@@ -117,18 +147,34 @@ echo extract($_POST);
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </body>
 
 <script>
+    window.alert_toast= function($msg = 'TEST',$bg = 'success'){
+        $('#alert_toast').removeClass('bg-success')
+        $('#alert_toast').removeClass('bg-danger')
+        $('#alert_toast').removeClass('bg-info')
+        $('#alert_toast').removeClass('bg-warning')
+
+        if($bg == 'success')
+        $('#alert_toast').addClass('bg-success')
+        if($bg == 'danger')
+        $('#alert_toast').addClass('bg-danger')
+        if($bg == 'info')
+        $('#alert_toast').addClass('bg-info')
+        if($bg == 'warning')
+        $('#alert_toast').addClass('bg-warning')
+        $('#alert_toast .toast-body').html($msg)
+        $('#alert_toast').toast({delay:3000}).toast('show');
+    }
     
     let calBtn = document.getElementById('calculate');
     calBtn.addEventListener('click', function() {
         calculate();
     });
 	
-
 	function calculate(){
-		start_load()
 		if($('#plan_id').val() == '' && $('[name="amount"]').val() == ''){
 			alert_toast("Select plan and enter amount first.","warning");
 			return false;
@@ -142,7 +188,7 @@ echo extract($_POST);
 				if(resp){
 					
 					$('#calculation_table').html(resp)
-					end_load()
+					
 				}
 			}
 
