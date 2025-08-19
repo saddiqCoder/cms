@@ -49,6 +49,19 @@ if (isset($_POST['btnSaveLoan'])) {
     echo "<script> alert('Loan Request Submitted!'); </script>";
 }
 
+// declaring an empty array to hold different querys
+$query = [];
+$queryarray = [];
+	
+// Query to search only music table in the database
+$query['getloans'] = "
+    SELECT `amount`, `purpose`, `date_created`, `status`  FROM loan_list 
+    WHERE member_id='".$memberID."'  LIMIT 10 OFFSET 0
+";
+
+$runloans = run_query($conn, $query['getloans']);
+$runloansresult = mysqli_fetch_all($runloans);
+
 ?>
 
 <!DOCTYPE html>
@@ -135,8 +148,7 @@ if (isset($_POST['btnSaveLoan'])) {
                 </tr>
             </thead>
             <tbody>
-                <tr><td>20000</td><td>Business Expansion</td><td>2025-06-10</td><td>Approved</td></tr>
-                <tr><td>15000</td><td>Medical Expenses</td><td>2025-04-05</td><td>Paid</td></tr>
+                <?php echo_out_loans($runloansresult, count($runloansresult)); ?>
             </tbody>
         </table>
 
