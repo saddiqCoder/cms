@@ -11,15 +11,49 @@ if ((!isset($_SESSION['memberuser']))){
 
 $loan = $conn->query("SELECT * from loan_list where status = 2 AND `member_id`='".$_SESSION['memberuser']['id']."' AND amount > 0");
 
+//adding a new repayment and updating the loan amount
 if (isset($_POST['repayment'])) {
     extract($_POST);
     $data = " loan_id = '$loanID' ";
+    $data .= ", payee = '".$_SESSION['memberuser']['fname']."' ";
     $data .= ", amount = '$amount' ";
-    $data .= ", date = '".date("Y-m-d H:i:s")."' ";
+    $data .= ", date_created = '".date("Y-m-d H:i:s")."' ";
 
-    echo $data;
-    //echo "<script> alert('Repayment Submitted!'); </script>";
+
+    //Fetching the initial loan amount
+    $loanDetails = $conn->query("SELECT * FROM loan_list WHERE id = '$loanID'")->fetch_assoc();
+    $initialAmount = $loanDetails['amount'];
+
+    //compering the repayment amount with the initial loan amount
+    if ($amount > $initialAmount) {
+        echo "<script> alert('Repayment amount cannot exceed the initial loan amount!'); </script>";
+    } else {
+        //substracting the repayment amount from the initial loan amount
+        $newAmount = $initialAmount - $amount;
+        $conn->query("UPDATE loan_list SET amount = '$newAmount' WHERE id = '$loanID'");
+        
+        //Inserting the repayment record
+        $save = $conn->query("INSERT INTO payments SET ".$data);
+        if ($save) {
+            echo "<script> alert('Repayment Submitted!'); </script>";
+        } else {
+            echo "<script> alert('Error in submitting repayment!'); </script>";
+        }
+    }
 }
+
+// Fetching the loan repayment history
+$query = [];
+$query['getRepaymentHistory'] = "
+    SELECT 
+    l.ref_no, 
+    p.payee, 
+    p.amount
+FROM loan_list l
+JOIN payments p ON p.loan_id = l.id
+WHERE l.id = '".$_SESSION['memberuser']['id']."'";
+$runRepaymentHistory = run_query($conn, $query['getRepaymentHistory']);
+$RepaymentHistoryResult = mysqli_fetch_all($runRepaymentHistory);
 
 ?>
 
@@ -58,8 +92,7 @@ if (isset($_POST['repayment'])) {
                         ?>
                         <option value="<?php echo $row['id'] ?>" <?php echo isset($loan_id) && $loan_id == $row['id'] ? "selected" : '' ?>><?php echo $row['ref_no'] ?></option>
                         <?php endwhile; ?>
-                    </select>
-                    
+                    </select>  
                 </div>
 
                 <div class="mb-3">
@@ -73,66 +106,30 @@ if (isset($_POST['repayment'])) {
                 </div>
 
                 <button type="submit" name="repayment" class="btn btn-warning">Submit Repayment</button>
-
-
-
-
-                <div class="mb-3">
-                    <large class="card-title"> <b>Payment List</b> </large>
-                </div>
-
-                <div class="mb-3">
-                    <table class="table table-bordered" id="loan-list">
-                        <colgroup>
-                            <col width="10%">
-                            <col width="25%">
-                            <col width="25%">
-                            <col width="20%">
-                            <col width="10%">
-                            <col width="10%">
-                        </colgroup>
-                        <thead>
-                            <tr>
-                                <th class="text-center">#</th>
-                                <th class="text-center">Loan Reference No</th>
-                                <th class="text-center">Payee</th>
-                                <th class="text-center">Amount</th>
-                                <th class="text-center">Penalty</th>
-                                <th class="text-center">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        
-                        </tbody>
-                    </table>
-                </div>  
-
-
-
-
-
-
             </form>
 
-            <h3>Past Repayments</h3>
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Loan ID</th>
-                        <th>Amount</th>
-                        <th>Date</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>LN001</td>
-                        <td>5000</td>
-                        <td>2025-07-01</td>
-                        <td>Confirmed</td>
-                    </tr>
-                </tbody>
-            </table>
+            <hr>
+
+            <h3>Repayment History</h3>
+            <div class="mb-3">
+                <table class="table table-bordered" id="loan-list">
+                    <colgroup>
+                        <col width="33.3%">
+                        <col width="33.3%">
+                        <col width="33.3%">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th class="text-center">Loan Reference No</th>
+                            <th class="text-center">Payee</th>
+                            <th class="text-center">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php echo_out_updateresult($RepaymentHistoryResult, count($RepaymentHistoryResult)); ?>
+                    </tbody>
+                </table>
+            </div>  
 
             <a href="dashboard.html" class="btn btn-secondary mt-3">Back to Dashboard</a>
         </div>
