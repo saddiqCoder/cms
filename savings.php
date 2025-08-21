@@ -13,7 +13,7 @@ extract($_POST);
 @$data  = " memberID = '$memberID' ";
 @$data .= ", amount = '$amount' ";
 @$data .= ", date = '$date' ";
-@$data .= ", status = 'pendig' ";
+@$data .= ", status = 'saved' ";
 /* endOfData */
 
 /* updating savings into the database */
@@ -58,7 +58,7 @@ $runsavingsresult = mysqli_fetch_all($runsavings);
         <a href="#">🏦 Savings</a>
         <a href="loan.php">💳 Loan</a>
         <a href="repayment.php">💵 Repayment</a>
-        <a href="index.php">🚪 Logout</a>
+        <a href="logout.php">🚪 Logout</a>
     </aside>
 
     <main>
